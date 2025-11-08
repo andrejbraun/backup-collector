@@ -1,2 +1,7 @@
-GET http://localhost:8080
+curl -X POST http://localhost:8080/api/backups \
+  -H "Content-Type: application/json" \
+  -d '{"source":"example_source_2","type":"incremental","size_mb":23.45,"duration_sec":67.89,"status":"failed"}'
 
+###
+
+GET http://localhost:8080/api/backups
