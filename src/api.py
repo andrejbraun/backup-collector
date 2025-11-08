@@ -1,18 +1,31 @@
 from robyn import Robyn
 import json
-from .database import add_backup_record, list_backups_records
+from .database import add_backup_record, list_backups_records, Backup
+from datetime import datetime
+from dataclasses import asdict
 
 app = Robyn(__file__)
 
 
 @app.post("/api/backups")
 async def add_backup(request) -> dict[str, str]:
-    data: dict[str, any] = json.loads(request.body)
-    add_backup_record(data)
+    data = json.loads(request.body)
+    # Erstelle Backup-Objekt aus Daten, timestamp jetzt
+    backup = Backup(
+        id=None,
+        source=data["source"],
+        type=data["type"],
+        size_mb=float(data["size_mb"]),
+        duration_sec=float(data["duration_sec"]),
+        status=data["status"],
+        timestamp=data.get("timestamp") or datetime.now().isoformat(),
+    )
+    add_backup_record(backup)
     return {"status": "ok"}
 
 
 @app.get("/api/backups")
-async def list_backups(request) -> dict[str, any]:
+async def list_backups(request) -> dict[str, list]:
     backups = list_backups_records()
-    return {"backups": backups}
+    # Serialisiere Backup-Objekte zu dicts
+    return {"backups": [asdict(b) for b in backups]}
