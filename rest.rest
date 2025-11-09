@@ -30,4 +30,12 @@ curl -X POST http://localhost:8080/api/backups \
 
 ###
 
+
+curl -X POST http://localhost:8080/api/backups \
+  -H "Content-Type: application/json" \
+  -d '{"database_type":"mysql","source_host":"db-server-5","status":"failed"}'
+
+
+###
+
 GET http://localhost:8080/api/backups

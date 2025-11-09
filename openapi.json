@@ -1,0 +1,95 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Backup Collector API",
+    "version": "1.0.0",
+    "description": "API zur Verwaltung und Überwachung von Backup-Jobs."
+  },
+  "paths": {
+    "/api/backups": {
+      "get": {
+        "summary": "Liste aller Backups abrufen",
+        "operationId": "listBackups",
+        "responses": {
+          "200": {
+            "description": "Liste der Backups",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "backups": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Backup" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Neues Backup protokollieren",
+        "operationId": "addBackup",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/BackupInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Backup erfolgreich gespeichert",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Backup": {
+        "type": "object",
+        "properties": {
+          "database_type": { "type": "string", "enum": ["postgres", "mysql", "oracle"] },
+          "source_host": { "type": "string" },
+          "backup_level": { "type": "string", "nullable": true, "enum": ["full", "incremental", "differential", "other"] },
+          "backup_method": { "type": "string", "nullable": true, "enum": ["dump", "snapshot", "physical", "logical", "other"] },
+          "program": { "type": "string", "nullable": true },
+          "size_mb": { "type": "number" },
+          "duration_sec": { "type": "number" },
+          "status": { "type": "string", "enum": ["success", "failed", "cancelled"] },
+          "created_at": { "type": "string", "format": "date-time" }
+        },
+        "required": ["database_type", "source_host", "status"]
+      },
+      "BackupInput": {
+        "type": "object",
+        "properties": {
+          "database_type": { "type": "string", "enum": ["postgres", "mysql", "oracle"] },
+          "source_host": { "type": "string" },
+          "backup_level": { "type": "string", "nullable": true, "enum": ["full", "incremental", "differential", "other"] },
+          "backup_method": { "type": "string", "nullable": true, "enum": ["dump", "snapshot", "physical", "logical", "other"] },
+          "program": { "type": "string", "nullable": true },
+          "size_mb": { "type": "number" },
+          "duration_sec": { "type": "number" },
+          "status": { "type": "string", "enum": ["success", "failed", "cancelled"] },
+          "created_at": { "type": "string", "format": "date-time", "nullable": true }
+        },
+        "required": ["database_type", "source_host", "status"]
+      }
+    }
+  }
+}

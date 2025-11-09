@@ -14,31 +14,36 @@ class BackupLevel(str, Enum):
     FULL = "full"
     INCREMENTAL = "incremental"
     DIFFERENTIAL = "differential"
+    OTHER = "other"
 
 class BackupMethod(str, Enum):
     LOGICAL = "logical"
     PHYSICAL = "physical"
+    DUMP = "dump"
+    SNAPSHOT = "snapshot"
+    OTHER = "other"
 
 class Program(str, Enum):
     PG_DUMP = "pg_dump"
     MYSQLDUMP = "mysqldump"
     RMAN = "rman"
     PG_BACKREST = "pgBackrest"
+    OTHER = "other"
 
 class Status(str, Enum):
-    RUNNING = "running"
     SUCCESS = "success"
     FAILED = "failed"
+    CANCELLED = "cancelled"
 
 class Backup(BaseModel):
     id: int | None = None
     database_type: DatabaseType
     source_host: str
     backup_level: BackupLevel | None = None
-    backup_method: BackupMethod
+    backup_method: BackupMethod | None = None
     program: Program | None = None
-    size_mb: float
-    duration_sec: float
+    size_mb: float | None = None
+    duration_sec: float | None = None
     status: Status
     created_at: str
 

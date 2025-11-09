@@ -154,15 +154,17 @@ document.addEventListener('DOMContentLoaded', () => {
         filtered.forEach(backup => {
             const createdAt = new Date(backup.created_at).toLocaleString('de-DE');
             const statusClass = (backup.status ? backup.status.toLowerCase() : 'unknown');
+            const size_mb = backup.size_mb ? backup.size_mb.toFixed(2) + ' MB' : 'N/A';
+            const duration_sec = backup.duration_sec ? backup.duration_sec.toFixed(2) + ' s' : 'N/A';
             const cardHtml = `
                 <div class="card">
                     <div class="card-header">
                         <h2>${backup.source_host}</h2>
-                        <p>Datenbank: ${backup.database_type} | Level: ${backup.backup_level}</p>
+                        <p>Datenbank: ${backup.database_type} | Level: ${backup.backup_level || 'N/A'}</p>
                     </div>
                     <div class="card-body">
-                        <p><strong>Größe:</strong> ${backup.size_mb.toFixed(2)} MB</p>
-                        <p><strong>Dauer:</strong> ${backup.duration_sec.toFixed(2)} s</p>
+                        <p><strong>Größe:</strong> ${size_mb}</p>
+                        <p><strong>Dauer:</strong> ${duration_sec}</p>
                         <p><strong>Programm:</strong> ${backup.program || 'N/A'}</p>
                         <p><strong>Erstellt am:</strong> ${createdAt}</p>
                     </div>

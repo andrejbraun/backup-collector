@@ -3,7 +3,9 @@ import json
 import os
 from .database import add_backup_record, list_backups_records, Backup
 
-app = Robyn(__file__)
+app = Robyn(__file__, 
+            openapi_file_path=os.path.join(os.path.dirname(__file__), "../openapi.json")
+            )
 
 
 @app.post("/api/backups")
@@ -13,10 +15,10 @@ async def add_backup(request) -> dict[str, str]:
         database_type=data["database_type"],
         source_host=data["source_host"],
         backup_level=data.get("backup_level"),
-        backup_method=data["backup_method"],
+        backup_method=data.get("backup_method"),
         program=data.get("program"),
-        size_mb=float(data["size_mb"]),
-        duration_sec=float(data["duration_sec"]),
+        size_mb=float(data["size_mb"]) if data.get("size_mb") is not None else None,
+        duration_sec=float(data["duration_sec"]) if data.get("duration_sec") is not None else None,
         status=data["status"],
         created_at=data.get("created_at"),
     )
@@ -52,6 +54,3 @@ async def index(request):
             {"Content-Type": "text/plain"},
             "Dashboard not found", 
             )
-
-# import os
-# print("Current working dir:", os.getcwd())

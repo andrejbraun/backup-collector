@@ -69,7 +69,7 @@ header {
 .card-footer.failed {
     background-color: #dc3545;
 }
-.card-footer.running {
+.card-footer.cancelled {
     background-color: #ffc107;
     color: #212529;
 }
