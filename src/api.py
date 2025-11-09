@@ -53,32 +53,5 @@ async def index(request):
             "Dashboard not found", 
             )
 
-
-
-# # # Endpunkt, der die Hauptseite (index.html) ausliefert
-# @app.get("/")
-# async def index():
-#     try:
-#         # with open("./static/index.html", "r") as f:
-#         with open(os.path.join(STATIC_DIR, "index.html"), "r") as f:
-#             content = f.read()
-#         # Wichtig: Den korrekten Content-Type setzen, damit der Browser HTML rendert
-#         return Response(content, status_code=200, headers={"Content-Type": "text/html"})
-#     except FileNotFoundError:
-#         return Response("Dashboard not found", status_code=404)
-    
-
-# # Statische Dateien aus dem "/static" Ordner bereitstellen
-# # Jede Anfrage an http://localhost:8080/static/... wird in diesem Ordner gesucht.
-# app.serve_directory("/static", "./static")
-
-
-
-# @app.get("/")
-# async def index(request):
-#     with open(os.path.join(STATIC_DIR, "index.html"), encoding="utf-8") as f:
-#         return f.read()
-    
-    
 # import os
 # print("Current working dir:", os.getcwd())
