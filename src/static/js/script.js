@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let allBackups = [];
-    let filterValues = { source_host: '', database_type: '', status: '' };
+    let filterValues = { source_host: '', database_type: '', status: '', created_at: '' };
 
     function createDropdown(id, label, options) {
         const select = document.createElement('select');
@@ -25,6 +25,27 @@ document.addEventListener('DOMContentLoaded', () => {
         select.style.border = '1px solid #ccc';
         select.style.background = '#fff';
         select.style.fontSize = '1rem';
+        select.style.cursor = 'pointer';
+        return select;
+    }
+
+    function createDateIntervalDropdown() {
+        const select = document.createElement('select');
+        select.id = 'filter-created-at';
+        select.innerHTML = `
+            <option value="">Alle Zeiträume</option>
+            <option value="1h">Letzte Stunde</option>
+            <option value="12h">Letzte 12 Stunden</option>
+            <option value="1d">Letzter Tag</option>
+            <option value="1w">Letzte Woche</option>
+            <option value="1m">Letzter Monat</option>
+        `;
+        select.style.padding = '0.3rem 0.7rem';
+        select.style.borderRadius = '6px';
+        select.style.border = '1px solid #ccc';
+        select.style.background = '#fff';
+        select.style.fontSize = '1rem';
+        select.style.cursor = 'pointer';
         return select;
     }
 
@@ -38,8 +59,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const prevSource = filterValues.source_host;
         const prevDbType = filterValues.database_type;
         const prevStatus = filterValues.status;
+        const prevCreatedAt = filterValues.created_at;
 
         filterBar.innerHTML = '';
+         // DB Type Dropdown
+        const dbTypeSelect = createDropdown('filter-db-type', 'Datenbanktypen', dbTypes);
+        dbTypeSelect.value = prevDbType;
+        dbTypeSelect.onchange = e => {
+            filterValues.database_type = e.target.value;
+            renderBackups();
+        };
+        filterBar.appendChild(dbTypeSelect);
         // Source Host Dropdown
         const sourceHostSelect = createDropdown('filter-source-host', 'Quellen', sourceHosts);
         sourceHostSelect.value = prevSource;
@@ -48,14 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
             renderBackups();
         };
         filterBar.appendChild(sourceHostSelect);
-        // DB Type Dropdown
-        const dbTypeSelect = createDropdown('filter-db-type', 'Datenbanktypen', dbTypes);
-        dbTypeSelect.value = prevDbType;
-        dbTypeSelect.onchange = e => {
-            filterValues.database_type = e.target.value;
-            renderBackups();
-        };
-        filterBar.appendChild(dbTypeSelect);
         // Status Dropdown
         const statusSelect = createDropdown('filter-status', 'Status', statuses);
         statusSelect.value = prevStatus;
@@ -64,6 +86,29 @@ document.addEventListener('DOMContentLoaded', () => {
             renderBackups();
         };
         filterBar.appendChild(statusSelect);
+        // Created At Intervall Dropdown
+        const createdAtSelect = createDateIntervalDropdown();
+        createdAtSelect.value = prevCreatedAt;
+        createdAtSelect.onchange = e => {
+            filterValues.created_at = e.target.value;
+            renderBackups();
+        };
+        filterBar.appendChild(createdAtSelect);
+        // Reset Button
+        const resetBtn = document.createElement('button');
+        resetBtn.textContent = 'Filter zurücksetzen';
+        resetBtn.style.padding = '0.3rem 1.2rem';
+        resetBtn.style.borderRadius = '6px';
+        resetBtn.style.border = '1px solid #bbb';
+        resetBtn.style.background = '#f3f3f3';
+        resetBtn.style.fontSize = '1rem';
+        resetBtn.style.cursor = 'pointer';
+        resetBtn.onclick = () => {
+            filterValues = { source_host: '', database_type: '', status: '', created_at: '' };
+            updateFilterBar(backups);
+            renderBackups();
+        };
+        filterBar.appendChild(resetBtn);
     }
 
     function renderBackups() {
@@ -76,6 +121,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (filterValues.status) {
             filtered = filtered.filter(b => b.status === filterValues.status);
+        }
+        if (filterValues.created_at) {
+            const now = new Date();
+            let minDate = null;
+            switch (filterValues.created_at) {
+                case '1h':
+                    minDate = new Date(now.getTime() - 60 * 60 * 1000); break;
+                case '12h':
+                    minDate = new Date(now.getTime() - 12 * 60 * 60 * 1000); break;
+                case '1d':
+                    minDate = new Date(now.getTime() - 24 * 60 * 60 * 1000); break;
+                case '1w':
+                    minDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000); break;
+                case '1m':
+                    minDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); break;
+            }
+            if (minDate) {
+                filtered = filtered.filter(b => {
+                    const created = new Date(b.created_at);
+                    return created >= minDate && created <= now;
+                });
+            }
         }
 
         container.innerHTML = '';
