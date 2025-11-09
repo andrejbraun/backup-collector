@@ -8,7 +8,7 @@ body {
 }
 
 header {
-    text-align: center;
+    text-align: left;
     margin-bottom: 2rem;
 }
 
@@ -51,24 +51,25 @@ header {
     font-size: 0.95rem;
 }
 
-.status {
+.card-footer {
     font-weight: bold;
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
     color: white;
     text-align: center;
-    display: inline-block;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    padding: 0.7rem 0;
+    margin: 0 -1.5rem -1.5rem -1.5rem;
+    /* gleicht das Card-Padding aus, damit Footer bündig abschließt */
+    font-size: 1.1rem;
+    letter-spacing: 0.04em;
 }
-
-.status.success {
+.card-footer.success {
     background-color: #28a745;
 }
-
-.status.failed {
+.card-footer.failed {
     background-color: #dc3545;
 }
-
-.status.running {
+.card-footer.running {
     background-color: #ffc107;
     color: #212529;
 }

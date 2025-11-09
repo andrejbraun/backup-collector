@@ -153,6 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
         filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         filtered.forEach(backup => {
             const createdAt = new Date(backup.created_at).toLocaleString('de-DE');
+            const statusClass = (backup.status ? backup.status.toLowerCase() : 'unknown');
             const cardHtml = `
                 <div class="card">
                     <div class="card-header">
@@ -164,8 +165,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p><strong>Dauer:</strong> ${backup.duration_sec.toFixed(2)} s</p>
                         <p><strong>Programm:</strong> ${backup.program || 'N/A'}</p>
                         <p><strong>Erstellt am:</strong> ${createdAt}</p>
-                        <p><span class="status ${backup.status.toLowerCase()}">${backup.status.toUpperCase()}</span></p>
                     </div>
+                    <div class="card-footer ${statusClass}">${backup.status ? backup.status.toUpperCase() : '-'}</div>
                 </div>
             `;
             container.innerHTML += cardHtml;
