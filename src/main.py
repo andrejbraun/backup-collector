@@ -1,5 +1,12 @@
 from .api import app
 from .database import init_db
+from .logging_config import setup_logging
+
+
+
+logger = setup_logging()
+logger.info("Backup Collector API Server startet...")
+
 
 # ensure DB exists
 init_db()
