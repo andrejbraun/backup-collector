@@ -1,42 +1,77 @@
 import sqlite3
 from pydantic import BaseModel, field_validator
 from datetime import datetime
+from enum import Enum
 
-DB_PATH = "backups.db"
+DB_PATH = "data/backups.db"
+
+class DatabaseType(str, Enum):
+    MYSQL = "mysql"
+    POSTGRESQL = "postgresql"
+    ORACLE = "oracle"
+
+class BackupLevel(str, Enum):
+    FULL = "full"
+    INCREMENTAL = "incremental"
+    DIFFERENTIAL = "differential"
+
+class BackupMethod(str, Enum):
+    LOGICAL = "logical"
+    PHYSICAL = "physical"
+
+class Program(str, Enum):
+    PG_DUMP = "pg_dump"
+    MYSQLDUMP = "mysqldump"
+    RMAN = "rman"
+    PG_BACKREST = "pgBackrest"
+
+class Status(str, Enum):
+    RUNNING = "running"
+    SUCCESS = "success"
+    FAILED = "failed"
 
 class Backup(BaseModel):
     id: int | None = None
-    source: str
-    type: str
+    database_type: DatabaseType
+    source_host: str
+    backup_level: BackupLevel | None = None
+    backup_method: BackupMethod
+    program: Program | None = None
     size_mb: float
     duration_sec: float
-    status: str
-    timestamp: str
+    status: Status
+    created_at: str
 
-    @field_validator("timestamp", mode="before")
+    @field_validator("created_at", mode="before")
     @classmethod
-    def default_timestamp(cls, v):
+    def default_created_at(cls, v):
         return v or datetime.now().isoformat()
 
 def backup_from_row(row: tuple) -> Backup:
     return Backup(
         id=row[0],
-        source=row[1],
-        type=row[2],
-        size_mb=row[3],
-        duration_sec=row[4],
-        status=row[5],
-        timestamp=row[6],
+        database_type=row[1],
+        source_host=row[2],
+        backup_level=row[3],
+        backup_method=row[4],
+        program=row[5],
+        size_mb=row[6],
+        duration_sec=row[7],
+        status=row[8],
+        created_at=row[9],
     )
 
 def backup_to_db_tuple(backup: Backup) -> tuple:
     return (
-        backup.source,
-        backup.type,
+        backup.database_type,
+        backup.source_host,
+        backup.backup_level,
+        backup.backup_method,
+        backup.program,
         backup.size_mb,
         backup.duration_sec,
         backup.status,
-        backup.timestamp,
+        backup.created_at,
     )
 
 def init_db() -> None:
@@ -46,12 +81,15 @@ def init_db() -> None:
         """
         CREATE TABLE IF NOT EXISTS backups (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            source TEXT,
-            type TEXT,
+            database_type TEXT,
+            source_host TEXT,
+            backup_level TEXT,
+            backup_method TEXT,
+            program TEXT,
             size_mb REAL,
             duration_sec REAL,
             status TEXT,
-            timestamp TEXT
+            created_at TEXT
         )
         """
     )
@@ -64,8 +102,8 @@ def add_backup_record(backup: Backup) -> None:
     c = conn.cursor()
     c.execute(
         """
-        INSERT INTO backups (source, type, size_mb, duration_sec, status, timestamp)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO backups (database_type, source_host, backup_level, backup_method, program, size_mb, duration_sec, status, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
         backup_to_db_tuple(backup),
     )
@@ -76,7 +114,7 @@ def add_backup_record(backup: Backup) -> None:
 def list_backups_records() -> list[Backup]:
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute("SELECT * FROM backups ORDER BY timestamp DESC")
+    c.execute("SELECT * FROM backups ORDER BY created_at DESC")
     rows = c.fetchall()
     conn.close()
     return [backup_from_row(r) for r in rows]

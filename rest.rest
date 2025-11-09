@@ -1,6 +1,32 @@
 curl -X POST http://localhost:8080/api/backups \
   -H "Content-Type: application/json" \
-  -d '{"source":"example_source_2","type":"incremental","size_mb":23.45,"duration_sec":67.89,"status":"failed"}'
+  -d '{"database_type":"postgresql","source_host":"db-server-1","backup_level":"incremental","backup_method":"logical","program":"pg_dump","size_mb":23.45,"duration_sec":37.89,"status":"failed"}'
+
+###
+
+curl -X POST http://localhost:8080/api/backups \
+  -H "Content-Type: application/json" \
+  -d '{"database_type":"mysql","source_host":"db-server-2","backup_level":"full","backup_method":"physical","program":"mysqldump","size_mb":45.67,"duration_sec":55.12,"status":"success"}'
+###
+
+
+curl -X POST http://localhost:8080/api/backups \
+  -H "Content-Type: application/json" \
+  -d '{"database_type":"mysql","source_host":"db-server-3","backup_level":"differential","backup_method":"logical","program":"mysqldump","size_mb":12.34,"duration_sec":22.45,"status":"success"}'
+###
+
+curl -X POST http://localhost:8080/api/backups \
+  -H "Content-Type: application/json" \
+  -d '{"database_type":"postgresql","source_host":"db-server-4","backup_level":"full","backup_method":"physical","program":"pgBackrest","size_mb":78.90,"duration_sec":88.67,"status":"failed"}'
+
+
+###
+
+
+curl -X POST http://localhost:8080/api/backups \
+  -H "Content-Type: application/json" \
+  -d '{"database_type":"mysql","source_host":"db-server-5","backup_level":"incremental","backup_method":"logical","program":"mysqldump","size_mb":34.56,"duration_sec":44.78,"status":"success"}'
+
 
 ###
 
