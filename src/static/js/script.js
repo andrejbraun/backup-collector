@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <p><strong>Programm:</strong> ${backup.program || 'N/A'}</p>
                         <p><strong>Erstellt am:</strong> ${createdAt}</p>
                     </div>
-                    <div class="card-footer ${statusClass}">${backup.status ? backup.status.toUpperCase() : '-'}</div>
+                    <div class="card-footer ${statusClass}"></div>
                 </div>
             `;
             container.innerHTML += cardHtml;
